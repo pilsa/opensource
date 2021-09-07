@@ -2,15 +2,14 @@
 > 안녕하세요. :heart_eyes: 기술 세미나 발표를 위한 프로젝트 입니다.  
 > 세미나 주제 선정 기준은 `범용적`, `국제표준`, `OpenSource`, `실무적용` 입니다.  
 > 세미나 발표 내용은 해당 프로젝트에 구현되어 있습니다.  
-> `연재`가 가능하도록 개발환경을 구성하였습니다.  
+> 지속적인 `연재`가 가능하도록 개발환경을 구성하였습니다.  
 
 
-## Document 
-> 세미나 발표를 위한 문서입니다. 새창으로 열어주시기 바랍니다.
+# Document 
+> 아래는 세미나 발표를 위한 문서입니다. 새창으로 열어주시기 바랍니다.
 - [1번 주제 : Validator 어디까지 써봤니?](https://pilsa.notion.site/Bean-Validation-Hibernate-Validator-c64da73f64bb4bfab0b34ebc1897912f)
 
-## Table of Contents
- 
+## Table of Contents 
 - [개발환경](#개발환경)
 - [기술요소](#기술요소)
 - [테스트 환경](#테스트-환경)
