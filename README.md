@@ -1,11 +1,16 @@
 # 기술 세미나 
-> 안녕하세요. :heart_eyes:   
-> 기술 세미나를 위한 프로젝트 입니다.  
-> 기술 세미나 Content를 지속적으로 보급(?)하고자 `연재/연계`가 가능하도록 개발환경을 구성하였습니다.  
-> `범용적`, `국제표준`, `OpenSource`, `실무적용` 에 맞는 주제를 선정하도록 노력 하겠습니다.     
+> 안녕하세요. :heart_eyes: 기술 세미나 발표를 위한 프로젝트 입니다.  
+> 세미나 주제 선정 기준은 `범용적`, `국제표준`, `OpenSource`, `실무적용` 입니다.  
+> 세미나 발표 내용은 해당 프로젝트에 구현되어 있습니다.  
+> `연재`가 가능하도록 개발환경을 구성하였습니다.  
+
+
+## Document 
+> 세미나 발표를 위한 문서입니다. 새창으로 열어주시기 바랍니다.
+- [1번 주제 : Validator 어디까지 써봤니?](https://pilsa.notion.site/Bean-Validation-Hibernate-Validator-c64da73f64bb4bfab0b34ebc1897912f)
 
 ## Table of Contents
-- [1번 주제 : Validator 어디까지 써봤니?](https://pilsa.notion.site/Bean-Validation-Hibernate-Validator-c64da73f64bb4bfab0b34ebc1897912f){:target="_blank"} 
+ 
 - [개발환경](#개발환경)
 - [기술요소](#기술요소)
 - [테스트 환경](#테스트-환경)
@@ -41,7 +46,7 @@
 > `HTTP상태코드` `4XX` 대 에러 경우 조치 방법을 `message` 에 안내합니다.
 
 ##### 성공응답 예시
-``` json
+```json
 {
   "success": "true",
   "data": {
@@ -59,11 +64,10 @@
     ]
   }
 }
-
 ``` 
 ##### 에러응답 예시
 
-``` json
+```json
 {
   "success": "false",
   "errors": {
