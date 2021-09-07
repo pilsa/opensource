@@ -7,7 +7,7 @@
 
 # Document 
 > 아래는 세미나 발표를 위한 문서입니다. 새창으로 열어주시기 바랍니다.
-- [1번 주제 : Validator 어디까지 써봤니?](https://pilsa.notion.site/Bean-Validation-Hibernate-Validator-c64da73f64bb4bfab0b34ebc1897912f)
+- [_1번 주제 : Validator 어디까지 써봤니?_](https://pilsa.notion.site/Bean-Validation-Hibernate-Validator-c64da73f64bb4bfab0b34ebc1897912f)
 
 ## Table of Contents 
 - [개발환경](#개발환경)
