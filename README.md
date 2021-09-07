@@ -5,7 +5,7 @@
 > `범용적`, `국제표준`, `OpenSource`, `실무적용` 에 맞는 주제를 선정하도록 노력 하겠습니다.     
 
 ## Table of Contents
-- [1번 주제 : Validator 어디까지 써봤니?](https://pilsa.notion.site/Bean-Validation-Hibernate-Validator-c64da73f64bb4bfab0b34ebc1897912f)
+- [1번 주제 : Validator 어디까지 써봤니?](https://pilsa.notion.site/Bean-Validation-Hibernate-Validator-c64da73f64bb4bfab0b34ebc1897912f){:target="_blank"}
 - [개발환경](#개발환경)
 - [기술요소](#기술요소)
 - [테스트 환경](#테스트-환경)
