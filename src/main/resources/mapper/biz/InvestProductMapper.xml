@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pilsa.invest.biz.service.mapper.InvestProductMapper">
+
+    <select id="selectInvestProducts" resultType="InvestProductDTO">
+        SELECT /** selectInvestProducts | 투자상품 목록 조회 */
+              TM.PRODUCT_ID                 /* 상품ID */
+            , TM.PRODUCT_TYPE               /* 상품구분코드 */
+            , TM.PRODUCT_NAME               /* 상품이름 */
+            , TM.PRODUCT_DSC                /* 상품설명 */
+            , TM.INT_RATE                   /* 적용이율 */
+            , TM.TOTAL_INVEST_AMOUNT        /* 총모집금액 */
+            , TM.STARTED_AT                 /* 투자시작일시 */
+            , TM.FINISHED_AT                /* 투자종료일시 */
+            , TM.ALLIANCE_CODE              /* 투자연계금융기관코드 */
+            , TM.INVEST_PERIOD              /* 투자기간 */
+            , TF.PRODUCT_STATUS             /* 상품상태코드 */
+            , TF.CURRENT_INVEST_AMOUNT      /* 현재모집금액 */
+            , TF.CURRENT_INVEST_CNT         /* 현재투자자수 */
+        FROM
+            INVEST_PRODUCT_TM TM
+            , INVEST_PRODUCT_TF TF
+        WHERE 1=1
+        AND TM.PRODUCT_ID = TF.PRODUCT_ID
+        <![CDATA[AND TM.STARTED_AT <= NOW() AND TM.FINISHED_AT >= NOW()]]>
+        <if test="productId != null">AND TM.PRODUCT_ID = #{productId}</if>
+        ORDER BY PRODUCT_STATUS ASC
+        <if test="sortOptionCode != null">
+            <if test="sortOptionCode.getKey() == 'INCOME'">,INT_RATE DESC, FINISHED_AT ASC</if> /*높은수익률순 : INCOME */
+            <if test="sortOptionCode.getKey() == 'PERIOD'">,INVEST_PERIOD ASC, FINISHED_AT ASC</if> /*짧은기간순 PERIOD */
+            <if test="sortOptionCode.getKey() == 'CLOSING'">,STARTED_AT ASC</if> /*마감임박순 CLOSING */
+        </if>
+    </select>
+
+    <!--투자실행시 전에 selectForUpdateProductDetail로 Row-Level Record Locking 후 업데이트 처리한다.-->
+    <update id="updateProductDetail">
+        UPDATE INVEST_PRODUCT_TF /** updateProductDetail | 투자상품 상세 단건 수정 */
+        <set>
+            <if test="productStatus != null">
+            PRODUCT_STATUS = #{productStatus} /* 상품상태코드 */</if>
+            <if test="currentInvestAmount != null">,
+                CURRENT_INVEST_CNT = (
+                SELECT IFNULL(MAX(CURRENT_INVEST_CNT),0)+1
+                FROM INVEST_PRODUCT_TF
+                WHERE PRODUCT_ID = #{productId}
+                ) /* 현재투자자수 */
+            </if>
+            <if test="currentInvestAmount != null">,
+            CURRENT_INVEST_AMOUNT = (
+                SELECT CURRENT_INVEST_AMOUNT + #{currentInvestAmount}
+                FROM INVEST_PRODUCT_TF
+                WHERE PRODUCT_ID = #{productId}
+                ) /* 현재모집금액 */
+            </if>
+            <if test="lstChngId != null">, LST_CHNG_ID = #{lstChngId}/* 최종변경자ID */ </if>
+            <if test="lstChngId != null">, LST_CHNG_AT = NOW() /* 최종변경일시 */</if>
+        </set>
+        WHERE 1=1
+        AND PRODUCT_ID = #{productId}
+    </update>
+
+
+    <insert id="insertProductHistory">
+        INSERT INTO INVEST_PRODUCT_TH /** insertProductHistory | 투자상품 이력 단건 등록 */
+        (
+          transaction_id  /* 거래ID */
+        , member_num      /* 회원번호 */
+        , product_id      /* 상품ID */
+        , trans_type      /* 거래유형코드 */
+        , trans_amount    /* 거래금액 */
+        , trans_at        /* 거래일시 */
+        , frst_rgs_at     /* 최초등록일시 */
+        , frst_rgs_id     /* 최초등록자ID */
+        , lst_chng_at     /* 최종변경일시 */
+        , lst_chng_id     /* 최종변경자ID */
+        )
+        VALUES
+        (
+          #{transactionId}
+        , #{memberNum}
+        , #{productId}
+        , #{transType}
+        , #{transAmount}
+        , NOW()
+        , NOW()
+        , #{frstRgsId}
+        , NOW()
+        , #{lstChngId}
+        )
+    </insert>
+
+    <select id="selectMyInvestTransactions" resultType="InvestTransactionDTO">
+        SELECT /** selectMyInvestTransactions | 나의투자 목록 조회 */
+               TM.PRODUCT_ID                /* 상품ID */
+             , TM.PRODUCT_NAME              /* 상품이름 */
+             , TM.TOTAL_INVEST_AMOUNT       /* 총모집금액 */
+             , TF.CURRENT_INVEST_AMOUNT     /* 현재모집금액 */
+             , TF.PRODUCT_STATUS            /* 상품상태코드 */
+             , TH.MY_INVEST_AMOUNT          /* 나의투자금액 */
+             , TH.TRANS_AT                  /* 거래일시 */
+        FROM (SELECT PRODUCT_ID
+                   ,PRODUCT_NAME
+                   ,TOTAL_INVEST_AMOUNT
+              FROM INVEST_PRODUCT_TM
+              WHERE PRODUCT_ID IN (SELECT PRODUCT_ID
+                                   FROM INVEST_PRODUCT_TH
+                                   WHERE MEMBER_NUM = #{memberNum} AND TRANS_TYPE = '01'
+                                   GROUP BY PRODUCT_ID)) TM
+           , INVEST_PRODUCT_TF TF
+           , (SELECT PRODUCT_ID,
+                     SUM(TRANS_AMOUNT) AS MY_INVEST_AMOUNT
+                    ,TRANS_AT
+              FROM INVEST_PRODUCT_TH TH
+              WHERE MEMBER_NUM = #{memberNum}
+                AND TRANS_TYPE = '01'
+              GROUP BY PRODUCT_ID) TH
+
+        WHERE 1 = 1
+          AND TM.PRODUCT_ID = TF.PRODUCT_ID
+          AND TM.PRODUCT_ID = TH.PRODUCT_ID
+        ORDER BY TRANS_AT DESC
+    </select>
+
+</mapper>

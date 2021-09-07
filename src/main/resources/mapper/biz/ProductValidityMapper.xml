@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pilsa.invest.biz.service.mapper.ProductValidityMapper">
+
+    <select id="selectInvestProduct" resultType="InvestProductDTO">
+        SELECT /** selectInvestProduct | 투자상품 단건 조회 */
+              PRODUCT_ID                 /* 상품ID */
+            , PRODUCT_TYPE               /* 상품구분코드 */
+            , PRODUCT_NAME               /* 상품이름 */
+            , PRODUCT_DSC                /* 상품설명 */
+            , INT_RATE                   /* 적용이율 */
+            , TOTAL_INVEST_AMOUNT        /* 총모집금액 */
+            , STARTED_AT                 /* 투자시작일시 */
+            , FINISHED_AT                /* 투자종료일시 */
+            , ALLIANCE_CODE              /* 투자연계금융기관코드 */
+            , INVEST_PERIOD              /* 투자기간 */
+        FROM
+            INVEST_PRODUCT_TM
+        WHERE 1=1
+        AND PRODUCT_ID = #{productId}
+    </select>
+
+    <select id="selectMemberInvestInfo" resultType="InvestProductDTO">
+        SELECT /** selectMemberInvestInfo | 회원 투자 정보 조회 (미사용)*/
+               V1.TOTAL_SUM_AMT
+             , V2.INVEST_PRD_CNT
+             , V3.REAL_SUM_AMT
+        FROM (SELECT SUM(TRANS_AMOUNT) AS TOTAL_SUM_AMT
+              FROM INVEST_PRODUCT_TH
+              WHERE MEMBER_NUM = #{memberNum}
+                AND TRANS_TYPE = 01
+        ) V1 -- 회원의 유효거래 중 투자금액 총 합계
+           , (SELECT COUNT(*) AS INVEST_PRD_CNT
+              FROM INVEST_PRODUCT_TH
+              WHERE MEMBER_NUM = #{memberNum}
+                AND TRANS_TYPE = 01
+                AND PRODUCT_ID = #{productId}
+        ) V2 -- 회원의 해당 상품의 정상거래 투자건수
+           , (SELECT SUM(TH.TRANS_AMOUNT) AS REAL_SUM_AMT
+              FROM INVEST_PRODUCT_TH TH
+                 , INVEST_PRODUCT_TM TM
+              WHERE TH.PRODUCT_ID = TM.PRODUCT_ID
+                AND TH.MEMBER_NUM = #{memberNum}
+                AND TH.TRANS_TYPE = 01
+                AND (TM.PRODUCT_TYPE = '01' OR TM.PRODUCT_TYPE = '02')
+        ) V3 -- 회원의 부동산 관련 상품 투자금액 총 합계
+    </select>
+
+    <select id="selectInvestProductCnt" resultType="memberInvestInfo">
+        SELECT /** selectInvestProductCnt | 회원의 특정 상품 정상거래 투자건수 조회 */
+            COUNT(*) AS INVEST_PRD_CNT -- 회원의 특정 상품 정상거래 투자건수
+        FROM INVEST_PRODUCT_TH
+        WHERE MEMBER_NUM = #{memberNum}
+        AND TRANS_TYPE = 01
+        AND PRODUCT_ID = #{productId}
+    </select>
+
+    <select id="selectRealSumAmt" resultType="memberInvestInfo">
+        SELECT /** selectRealSumAmt | 회원의 유효거래 중 부동산 관련 상품 투자금액 총 합계를 조회 */
+            IFNULL(SUM(TH.TRANS_AMOUNT), 0) AS REAL_SUM_AMT -- 회원의 유효거래 중 부동산 관련 상품 투자금액 총 합계
+        FROM INVEST_PRODUCT_TH TH
+           , INVEST_PRODUCT_TM TM
+        WHERE TH.PRODUCT_ID = TM.PRODUCT_ID
+        AND TH.MEMBER_NUM =  #{memberNum}
+        AND TH.TRANS_TYPE = 01
+        AND (TM.PRODUCT_TYPE = '01' OR TM.PRODUCT_TYPE = '02')
+    </select>
+
+    <select id="selectInvestTotalSumAmt" resultType="memberInvestInfo">
+        SELECT /** selectInvestTotalSumAmt | 회원의 유효거래 중 투자금액 총 합계 조회 */
+            IFNULL(SUM(TRANS_AMOUNT), 0) AS TOTAL_SUM_AMT
+        FROM INVEST_PRODUCT_TH
+        WHERE MEMBER_NUM = #{memberNum}
+        AND TRANS_TYPE = 01
+    </select>
+
+    <!-- Row-Level Locking -->
+    <select id="selectForUpdateProductDetail" resultType="ProductDetailDTO">
+        SELECT /** selectForUpdateProductDetail | 현재모집 금액 업데이트 전 Record Lock */
+               PRODUCT_ID               /* 상품ID */
+             , PRODUCT_STATUS           /* 상품상태코드 */
+             , CURRENT_INVEST_AMOUNT    /* 현재모집금액 */
+        FROM INVEST_PRODUCT_TF
+        WHERE PRODUCT_ID = #{productId}
+        FOR UPDATE
+    </select>
+
+</mapper>

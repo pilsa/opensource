@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <springProperty name="LOGS_FILE_PATH" source="logging.file.path" defaultValue="/logs"/>
+    <springProperty name="SYSTEM_NAME" source="project.name" defaultValue="default"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{HH:mm:ss.SSS} [%thread]] %-5p %c{10}\(%F:%M:%L\) [%X{transactionId}] %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.springframework" level="info"/>
+    <logger name="org.apache" level="info"/>
+    <logger name="jdbc.sqlonly" level="info"/>
+    <logger name="jdbc.sqltiming" level="info"/>
+    <logger name="jdbc.resultsettable" level="info"/>
+    <logger name="reactor" level="info"/>
+    <logger name="io.netty" level="info"/>
+
+    <root level="debug">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

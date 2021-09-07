@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pilsa.invest.biz.service.mapper.InvestAllianceMapper">
+
+    <select id="selectInvestAlliance" resultType="InvestAllianceDTO">
+        SELECT /** selectInvestAlliance | 활성화 투자연계금융기관 정보 조회 */
+             ALLIANCE_CODE         /* 투자연계금융기관코드 */
+            , ALLIANCE_NM           /* 투자연계금융기관명 */
+            , ONLINE_INVEST_LAW_YN  /* 온투업기관여부 */
+            , TOTAL_LIMIT_AMOUNT    /* 전체한도금액 */
+            , ONEC_LIMIT_AMOUNT     /* 1회투자한도금액 */
+            , REALTY_LIMIT_AMOUNT   /* 부동산투자한도금액 */
+            , CREDIT_LIMIT_AMOUNT   /* 동일차주한도금액 */
+            , USE_YN                /* 사용여부 */
+        FROM
+            INVEST_ALLIANCE_TM
+        WHERE 1=1
+        AND USE_YN = 'Y'
+    </select>
+</mapper>
